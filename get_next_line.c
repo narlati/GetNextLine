@@ -6,7 +6,7 @@
 /*   By: narlati <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/16 12:49:07 by narlati           #+#    #+#             */
-/*   Updated: 2016/11/16 20:09:14 by narlati          ###   ########.fr       */
+/*   Updated: 2016/11/17 14:54:05 by narlati          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,42 +21,61 @@ void			ft_print_buffer(char *s)
 	int i;
 
 	i = 0;
+	ft_putstr("le buffer vaut : ");
 	while (i < BUFF_SIZE)
 	{
 		ft_putchar(s[i]);
 		i++;
 	}
+	ft_putstr("\n");
 }
 
-
-char			*new_alloc(char *s)
+int ft_realloc(char *buffer, char **line, int max)
 {
 	int i;
-	char *s1;
+	char *s;
 
 	i = 0;
-	while (s[i] != '\0' || s[i] != '\n')
+	s = malloc(max);
+
+	printf("s vut %s\n", s);
+	printf("line vut %s\n", *line);
+	
+	while (i < max)
+	{
+		ft_memccpy(*line, buffer, '\n', i);
+		printf("line apres memccpy vut %s\n", *line);
+		*line = ft_strjoin(s, *line);
+		printf("line apres le join vut %s\n", *line);
+		if (buffer[i] == '\n')
+			return (1);
 		i++;
-	s1 = ft_memalloc(sizeof(i) * i);
-	ft_memccpy(s1, s, '\n', i - 1);
-	return (s1);
+	}
+	return (0);
 }
 
 int				get_next_line(const int fd, char **line)
 {
 	static char	*buffer = NULL;
 	int			ret;
+	int 		i;
 
+	i = 0;
 	if (buffer == NULL)
 		buffer = malloc(BUFF_SIZE);
+	line = malloc(BUFF_SIZE);
 	ret = read(fd, buffer, BUFF_SIZE);
-	ft_print_buffer(buffer);
 	if (ret == -1)
 		return (-1);
-	else if (ret > 0)
+	while (ret != 0)
 	{
-		buffer = new_alloc(buffer);
-		ft_print_buffer(buffer);
+		if (ft_realloc(buffer, line, ret) == 1)
+			return (1);
+		else
+		{
+			buffer = ft_strjoin(buffer, *line);
+			ret = read(fd, buffer, BUFF_SIZE);
+		}
 	}
 	return (0);
 }
