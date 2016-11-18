@@ -6,7 +6,7 @@
 /*   By: narlati <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/16 12:49:07 by narlati           #+#    #+#             */
-/*   Updated: 2016/11/17 14:54:05 by narlati          ###   ########.fr       */
+/*   Updated: 2016/11/18 17:57:32 by narlati          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,42 +16,39 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-void			ft_print_buffer(char *s)
+int ft_solve(char *buffer, char **line, size_t max)
 {
-	int i;
-
-	i = 0;
-	ft_putstr("le buffer vaut : ");
-	while (i < BUFF_SIZE)
-	{
-		ft_putchar(s[i]);
-		i++;
-	}
-	ft_putstr("\n");
-}
-
-int ft_realloc(char *buffer, char **line, int max)
-{
-	int i;
+	size_t i;
+	size_t j;
 	char *s;
+	char *transi;
 
+	s = malloc(sizeof(char) * max);
+	transi = ft_strdup(*line);
+	free(*line);
+	ft_memcpy((char *)s, (char *) buffer, max);
 	i = 0;
-	s = malloc(max);
-
-	printf("s vut %s\n", s);
-	printf("line vut %s\n", *line);
-	
+	j = 0;
 	while (i < max)
 	{
-		ft_memccpy(*line, buffer, '\n', i);
-		printf("line apres memccpy vut %s\n", *line);
-		*line = ft_strjoin(s, *line);
-		printf("line apres le join vut %s\n", *line);
 		if (buffer[i] == '\n')
+		{ 
+			*buffer =  
+			*line = ft_strjoin(transi, avantle\n);
 			return (1);
-		i++;
+		}
+		else if (buffer[i] == '\0')
+		{
+			*line = ft_strjoin(transi, ce quil y a jusqua '\0');
+			return (0);
+		}
+		else
+			*line = ft_strjoin(transi, buffer);
+		i++;	
 	}
-	return (0);
+	free (s);
+	free(transi);
+	return (-1);
 }
 
 int				get_next_line(const int fd, char **line)
@@ -59,23 +56,24 @@ int				get_next_line(const int fd, char **line)
 	static char	*buffer = NULL;
 	int			ret;
 	int 		i;
+	int			p;
 
 	i = 0;
 	if (buffer == NULL)
 		buffer = malloc(BUFF_SIZE);
-	line = malloc(BUFF_SIZE);
+	*line = malloc(BUFF_SIZE + 1);
+	**line = '\0';
 	ret = read(fd, buffer, BUFF_SIZE);
 	if (ret == -1)
 		return (-1);
-	while (ret != 0)
+	while (ret >= 0)
 	{
-		if (ft_realloc(buffer, line, ret) == 1)
+		p = ft_solve(buffer, line, ret);
+		if (p == 1)
 			return (1);
-		else
-		{
-			buffer = ft_strjoin(buffer, *line);
-			ret = read(fd, buffer, BUFF_SIZE);
-		}
+		else if (p == 0)
+			return (0);
+		ret = read(fd, buffer, BUFF_SIZE);
 	}
 	return (0);
 }
