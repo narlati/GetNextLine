@@ -6,7 +6,7 @@
 /*   By: narlati <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/16 12:49:07 by narlati           #+#    #+#             */
-/*   Updated: 2016/11/18 17:57:32 by narlati          ###   ########.fr       */
+/*   Updated: 2016/11/20 15:12:14 by narlati          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,34 +16,46 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-int ft_solve(char *buffer, char **line, size_t max)
+int ft_solve(char *buffer, char **line, size_t ret)
 {
 	size_t i;
 	size_t j;
 	char *s;
 	char *transi;
 
-	s = malloc(sizeof(char) * max);
+	if(!(s = malloc(sizeof(char) * ret)))
+		return (-1);
 	transi = ft_strdup(*line);
+	if (transi == NULL)
+		return (-1);
 	free(*line);
-	ft_memcpy((char *)s, (char *) buffer, max);
+	ft_memcpy(s, buffer, ret);
 	i = 0;
 	j = 0;
-	while (i < max)
+	while (i < ret)
 	{
-		if (buffer[i] == '\n')
-		{ 
-			*buffer =  
-			*line = ft_strjoin(transi, avantle\n);
+		if (s[i] == '\n')
+		{
+			while (i < ret)
+			{
+				buffer[j] = s[i + 1];
+				j++;
+				i++;
+			}
+			*line = ft_strnjoin(transi, buffer, i);
+			ft_putstr(*line);
+			ft_putstr("\nau dessus c est line\n");
+			ft_putstr(buffer);
+			ft_putstr("\nau dessus c est buffer\n");
 			return (1);
 		}
-		else if (buffer[i] == '\0')
+		else if (s[i] == '\0')
 		{
-			*line = ft_strjoin(transi, ce quil y a jusqua '\0');
+			*line = ft_strnjoin(transi, buffer, i);
 			return (0);
 		}
 		else
-			*line = ft_strjoin(transi, buffer);
+			*line = ft_strjoin(transi, s);
 		i++;	
 	}
 	free (s);
@@ -53,14 +65,12 @@ int ft_solve(char *buffer, char **line, size_t max)
 
 int				get_next_line(const int fd, char **line)
 {
-	static char	*buffer = NULL;
+	static char	buffer[BUFF_SIZE] = {0};
 	int			ret;
 	int 		i;
 	int			p;
 
 	i = 0;
-	if (buffer == NULL)
-		buffer = malloc(BUFF_SIZE);
 	*line = malloc(BUFF_SIZE + 1);
 	**line = '\0';
 	ret = read(fd, buffer, BUFF_SIZE);
@@ -81,10 +91,15 @@ int				get_next_line(const int fd, char **line)
 int main (int argc, char **argv)
 {
 	int fd;
+	int i;
 	char *line;
 
+	i = argc;
+	while (i > 0)
+		i--;
 	fd = open(argv[1], O_RDWR);
 	printf("%d\n", get_next_line(fd, &line));
+	free (line);
 	close (fd);
 	return (0);
 }
