@@ -6,7 +6,7 @@
 /*   By: narlati <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/16 12:49:07 by narlati           #+#    #+#             */
-/*   Updated: 2016/11/23 08:24:11 by narlati          ###   ########.fr       */
+/*   Updated: 2016/11/23 09:13:22 by narlati          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,26 +55,55 @@ static int			test_retour_chariot(t_buffer *yy, char **line)
 	
 }
 
+int		buffering(int ret, t_buffer *yy, char **line, char *buffer)
+{
+	if (yy->buffer != NULL)
+	{
+		*line = ft_strjoin(*line, yy->buffer);
+		yy->buffer = NULL;
+	}
+	if (ft_strchr(buffer, '\n') || ret < BUFF_SIZE)
+	{
+		yy->buffer = ft_strchr(buffer, '\n') + 1;
+		*line = ft_strjoin(*line, ft_strsub(buffer, 0, (yy->buffer - 1) - buffer));
+		return (1);
+	}
+	else
+	{
+		if (yy->buffer != NULL)
+		{			
+			buffer = ft_strjoin(buffer, yy->buffer);
+		//	buffer = NULL;
+		}
+		*line = ft_strjoin(*line, buffer);
+		return (0);	
+	}
+}
+
+
 int				get_next_line(const int fd, char **line)
 {
 	static t_buffer *tt = NULL;
 	int ret;
-	char buffer[BUFF_SIZE] = {0};
+	char *buffer;
 
-	ret = read(fd, buffer, BUFF_SIZE);
-	if ((ret == -1) || (fd == -1))
+	if (fd == -1)
 		return (-1);
 	*line = ft_strnew(0);
 	tt = ft_init_list(fd, tt);
 	if (test_retour_chariot(tt, line))
 		return (1);
 	buffer = (char *)malloc(sizeof(char) * (BUFF_SIZE + 1));
-	while (ret = read(fd, buffer, BUFF_SIZE))
+	while ((ret = read(fd, buffer, BUFF_SIZE)))
 	{
 		buffer[ret] = '\0';
-		if (
-
+		if (buffering (ret, tt, line, buffer))
+		{
+			return (1);
+		}
 	}
+
+	/*liste pour liberer le bazard*/
 	return (0);
 }
 
