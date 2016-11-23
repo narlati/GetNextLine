@@ -6,7 +6,7 @@
 /*   By: narlati <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/16 12:49:07 by narlati           #+#    #+#             */
-/*   Updated: 2016/11/23 16:27:22 by narlati          ###   ########.fr       */
+/*   Updated: 2016/11/23 17:14:03 by narlati          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,18 @@ void            free_and_del(t_buffer *tt)
 {
 	if (tt == NULL)
 		return ;
-	printf("--%p--\n", tt);
-	printf("->%p--\n", tt->next);
+//	printf("--%p--\n", tt);
+//	printf("->%p--\n", tt->next);
 	free_and_del(tt->next);
-//	free(tt->buffer);
-//	free(tt);
 }
 
-void		init_list(t_buffer *tt)
+void		init_list(t_buffer **tt, int *fd)
 {
-	
+	t_buffer init;
+	init.fd = *fd;
+	if (init.buffer == NULL)
+		init.buffer= malloc(BUFF_SIZE);
+	*tt = init;	
 }
 
 int			solver(t_buffer *tt, char **line, int ret)
@@ -57,17 +59,13 @@ int			solver(t_buffer *tt, char **line, int ret)
 
 int				get_next_line(const int fd, char **line)
 {
-	static t_buffer tanepasutiliser;
-	tanepasutiliser.next = NULL;
-	tanepasutiliser.fd = fd;
-	if (tanepasutiliser.buffer == NULL)
-		tanepasutiliser.buffer = malloc(BUFF_SIZE);
-	static t_buffer *tt = &tanepasutiliser;
+	static t_buffer *tt;
 	int ret;
 
 	if (fd == -1)
 		return (-1);
 	*line = ft_strnew(0);
+	init_list(*tt, &fd);
 //	if (tt == NULL)
 //		tt = ft_init_list(fd, tt);
 	while ((ret = read(fd, tt->buffer, BUFF_SIZE)))
