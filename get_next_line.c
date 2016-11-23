@@ -16,7 +16,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-t_buffer	*ft_init_list(const int fd, t_buffer *yy)
+static t_buffer	*ft_init_list(const int fd, t_buffer *yy)
 {
 	if (yy == NULL)
 	{
@@ -42,7 +42,7 @@ t_buffer	*ft_init_list(const int fd, t_buffer *yy)
 	return (yy);
 }	
 
-int			test_retour_chariot(t_buffer *yy, char **line)
+static int			test_retour_chariot(t_buffer *yy, char **line)
 {
 	char *tmp;
 	if (yy->buffer != NULL && (tmp = ft_strchr(*line, '\n')))
@@ -68,15 +68,13 @@ int				get_next_line(const int fd, char **line)
 	tt = ft_init_list(fd, tt);
 	if (test_retour_chariot(tt, line))
 		return (1);
-	prin
-
-/*
-	if (ret > 0)
+	buffer = (char *)malloc(sizeof(char) * (BUFF_SIZE + 1));
+	while (ret = read(fd, buffer, BUFF_SIZE))
 	{
-		return(4);
+		buffer[ret] = '\0';
+		if (
+
 	}
-	*line = malloc(BUFF_SIZE + 1);
-*/
 	return (0);
 }
 
