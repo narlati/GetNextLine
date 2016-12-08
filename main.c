@@ -14,10 +14,7 @@ int main(int argc, char **argv)
 		i++;
 	fd = open(argv[1], O_RDONLY);
 	while ((ret = get_next_line(fd, &line)) > 0)
-	{
 		printf("line vaut :%s\net ret vaut :%d\n\n", line, ret);
-		printf("strcmp = %d\n", ft_strcmp(line, "efghijkl"));
-	}
 	printf("ret vaut :%d\n", ret);
 	close (fd);
 	return (0);
